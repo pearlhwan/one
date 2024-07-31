@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>공제금액 계산기</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px;
+            width: 100%;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>공제금액 계산기</h1>
+        
+        <label for="total">총급여액을 입력하세요:</label>
+        <input type="number" id="total" placeholder="총급여액을 입력하세요">
+
+        <label for="sc">신용카드 사용금액:</label>
+        <input type="number" id="sc" placeholder="신용카드 사용금액을 입력하세요">
+
+        <label for="chc">체크카드, 직불카드 사용액:</label>
+        <input type="number" id="chc" placeholder="체크카드, 직불카드 사용액을 입력하세요">
+
+        <label for="hy">현금영수증 사용금액:</label>
+        <input type="number" id="hy" placeholder="현금영수증 사용금액을 입력하세요">
+
+        <label for="jt">전통시장 사용분:</label>
+        <input type="number" id="jt" placeholder="전통시장 사용분을 입력하세요">
+
+        <label for="dt">대중교통 이용분:</label>
+        <input type="number" id="dt" placeholder="대중교통 이용분을 입력하세요">
+
+        <button onclick="calculate()">계산</button>
+        
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        function calculate() {
+            const total = parseFloat(document.getElementById('total').value);
+            const sc = parseFloat(document.getElementById('sc').value);
+            const chc = parseFloat(document.getElementById('chc').value);
+            const hy = parseFloat(document.getElementById('hy').value);
+            const jt = parseFloat(document.getElementById('jt').value);
+            const dt = parseFloat(document.getElementById('dt').value);
+
+            if (isNaN(total) || isNaN(sc) || isNaN(chc) || isNaN(hy) || isNaN(jt) || isNaN(dt)) {
+                alert("모든 값을 정확히 입력해주세요.");
+                return;
+            }
+
+            const csg = total / 4;  // 최저사용금액
+            const cc = chc + hy;    // 체크카드 및 현금영수증 사용액
+            const sum = sc + cc + jt + dt;  // 연소비액 합계
+
+            let conclusion;
+            if (csg > sum) {
+                conclusion = sum * 0.8 - csg * 0.8;
+                document.getElementById('result').innerHTML = "결과: " + conclusion + "원<br>종료";
+                return;
+            }
+
+            let ggg;
+            if (csg < sc) {
+                ggg = cc * 0.3 + jt * 0.5 + dt * 0.8 - csg * 0.15 + sc * 0.15;
+            } else {
+                ggg = sc * 0.3 + jt * 0.5 + dt * 0.8 - csg * 0.3 + cc * 0.3;
+            }
+
+            if (ggg > 2500000) {
+                let result;
+                if (ggg - 2500000 > jt * 0.5 + dt * 0.8) {
+                    result = jt * 0.5 + dt * 0.8;
+                    if (result < 2000000) {
+                        conclusion = 2500000 + result;
+                    } else {
+                        conclusion = 4500000;
+                    }
+                } else {
+                    result = ggg - 2500000;
+                    if (result < 2000000) {
+                        conclusion = 2500000 + result;
+                    } else {
+                        conclusion = 4500000;
+                    }
+                }
+            } else {
+                conclusion = ggg;
+            }
+
+            document.getElementById('result').innerHTML = "신용카드등 사용공제액은 " + conclusion + "원입니다.";
+        }
+    </script>
+</body>
+</html>
